@@ -1,35 +1,39 @@
 pipeline {
   agent any
+
   stages {
+    stage('Checkout') {
+        steps {
+            git url: 'https://github.com/CentricPants/testdemo.git',
+                credentialsId: 'github-token'
+        }
+    }
+
     stage('Build') {
         steps {
-        echo 'Building..'
-      // Here you can define commands for your build
-      }
+            echo 'Building..'
+        }
     }
+
     stage('Test') {
       steps {
         echo 'Testing..'
-      
       }
     }
+
     stage('Deploy') {
       steps {
         echo 'Deploying....'
-      // Here you can define commands for your deployment
       }
     }
-    
-    
   }
+
   post {
     always {
       echo 'post build condition running'
     }
     failure {
-
       echo 'post action if build fail'
     }
-    
   }
 }
