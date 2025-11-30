@@ -19,5 +19,17 @@ pipeline {
       // Here you can define commands for your deployment
       }
     }
+    
+    
+  }
+  post {
+    always {
+      echo 'post build condition running'
+    }
+    failure {
+
+      echo 'post action if build fail'
+    }
+    
   }
 }
