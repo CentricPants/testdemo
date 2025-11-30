@@ -3,11 +3,13 @@ pipeline {
 
   stages {
     stage('Checkout') {
-        steps {
-            git url: 'https://github.com/CentricPants/testdemo.git',
-                credentialsId: 'github-token'
-        }
+    steps {
+        git branch: 'main',
+            url: 'https://github.com/CentricPants/testdemo.git',
+            credentialsId: 'github-token'
     }
+}
+
 
     stage('Build') {
         steps {
