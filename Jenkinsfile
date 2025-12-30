@@ -1,41 +1,65 @@
 pipeline {
-  agent any
+    agent any
 
-  stages {
-    stage('Checkout') {
-    steps {
-        git branch: 'main',
-            url: 'https://github.com/CentricPants/testdemo.git',
-            credentialsId: 'github-token'
+    environment {
+        VENV = "venv"
+        DEPLOY_DIR = "/tmp/flask_deploy"
     }
-}
 
+    stages {
 
-    stage('Build') {
-        steps {
-            echo 'Building..'
+        stage('Clone Repo') {
+            steps {
+                echo 'Repository cloned by Jenkins automatically'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                python3 -m venv $VENV
+                . $VENV/bin/activate
+                pip install --upgrade pip
+                pip install -r requirements.txt
+                '''
+            }
+        }
+
+        stage('Run Unit Tests') {
+            steps {
+                sh '''
+                . $VENV/bin/activate
+                pytest
+                '''
+            }
+        }
+
+        stage('Build Application') {
+            steps {
+                sh '''
+                mkdir -p build
+                cp app.py requirements.txt build/
+                '''
+            }
+        }
+
+        stage('Deploy (Simulated)') {
+            steps {
+                sh '''
+                mkdir -p $DEPLOY_DIR
+                cp -r build/* $DEPLOY_DIR/
+                echo "Application deployed to $DEPLOY_DIR"
+                '''
+            }
         }
     }
 
-    stage('Test') {
-      steps {
-        echo 'Testing..'
-      }
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed.'
+        }
     }
-
-    stage('Deploy') {
-      steps {
-        echo 'Deploying....'
-      }
-    }
-  }
-
-  post {
-    always {
-      echo 'post build condition running'
-    }
-    failure {
-      echo 'post action if build fail'
-    }
-  }
 }
